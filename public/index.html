@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WALL GO Ⅱ 牆壁圍棋 — 策略競技場</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=Cormorant+Garamond:wght@700&family=JetBrains+Mono:wght@500;700;800&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=20261120u" />
+</head>
+<body class="mode-landing">
+
+  <!-- ==================== VIEW 1: FULL-BLEED VIDEO GAME TITLE SCREEN ==================== -->
+  <section id="view-landing" class="landing-screen">
+    <div class="landing-bg" aria-hidden="true"></div>
+    <div class="landing-vignette" aria-hidden="true"></div>
+
+    <header class="landing-topbar">
+      <button type="button" id="btn-main-back" class="btn-icon-glass btn-back-glass hidden" title="返回上一步" aria-label="返回上一步">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        <span>返回</span>
+      </button>
+      <div class="landing-top-controls">
+        <button id="btn-landing-sound" class="btn-icon-glass" title="開關音效與配樂" aria-label="開關音效與配樂">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+        </button>
+        <button id="btn-landing-fs" class="btn-icon-glass" title="切換全螢幕 (F)" aria-label="切換全螢幕">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <div class="landing-center">
+      <!-- STEP 0 (First Screen): LOGO + ID INPUT + ENTER -->
+      <div id="landing-step-entry" class="entry-stage">
+        <div class="hero-emblem-title">
+          <div class="hero-kicker">EDITION Ⅰ &amp; Ⅱ · TACTICAL TERRITORY DUEL</div>
+          <h1 class="hero-logo">
+            <span class="logo-red">WALL</span><span class="logo-sep">·</span><span class="logo-blue">GO</span>
+            <span class="logo-num">Ⅱ</span>
+          </h1>
+          <p class="hero-zh">牆壁圍棋・極限領地封鎖戰</p>
+        </div>
+
+        <form id="entry-form" class="entry-card">
+          <!-- First visit / Logged out: ID + 4-digit PIN (auto register or cross-browser login) -->
+          <div id="entry-new-wrap" class="entry-mode-wrap">
+            <label class="entry-label" for="landing-nickname">玩家 ID 與 4 位數字密碼（首次即註冊，跨瀏覽器輸入同組帳密即可登入）</label>
+            <div class="entry-row">
+              <input id="landing-nickname" class="entry-input" type="text" maxlength="14" placeholder="請輸入對戰 ID…" autocomplete="username" />
+              <input id="landing-pin" class="entry-input entry-pin-input" type="password" inputmode="numeric" maxlength="4" pattern="[0-9]{4}" placeholder="4位密碼" autocomplete="current-password" aria-label="4 位數字密碼" />
+              <button type="submit" id="btn-landing-enter" class="btn btn-esports-red btn-enter">進入 →</button>
+            </div>
+            <div id="entry-error-msg" class="entry-error hidden" role="alert"></div>
+          </div>
+
+          <!-- Returning visitor (cached ID found): locked display + switch account -->
+          <div id="entry-cached-wrap" class="entry-mode-wrap hidden">
+            <div class="entry-cached-row">
+              <div class="entry-cached-info">
+                <span class="entry-cached-tag">PLAYER ID</span>
+                <strong id="entry-cached-name" class="entry-cached-name">策略玩家</strong>
+              </div>
+              <div class="entry-cached-actions">
+                <button type="button" id="btn-switch-account" class="btn btn-hud btn-sm">切換帳號</button>
+                <button type="button" id="btn-cached-enter" class="btn btn-esports-red btn-enter">進入 →</button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- STEP 1 (After Enter): NO LOGO — TWO HUGE RED & BLUE MODE CARDS -->
+      <div id="landing-step-main" class="mode-cards-grid poster-grid hidden">
+        <button type="button" id="card-choose-online" class="mode-poster-card poster-red">
+          <div class="poster-art poster-art-online" aria-hidden="true"></div>
+          <div class="poster-scrim poster-scrim-red" aria-hidden="true"></div>
+          <div class="poster-content">
+            <span class="poster-kicker">ONLINE MULTIPLAYER</span>
+            <h2>線上多人對戰</h2>
+            <p>參加天梯積分賽爭奪名次，或開立專屬房號邀請好友即時對決。</p>
+            <div class="poster-cta">進入多人競技場 →</div>
+          </div>
+        </button>
+
+        <button type="button" id="card-choose-solo" class="mode-poster-card poster-blue">
+          <div class="poster-art poster-art-solo" aria-hidden="true"></div>
+          <div class="poster-scrim poster-scrim-blue" aria-hidden="true"></div>
+          <div class="poster-content">
+            <span class="poster-kicker">SOLO VS AI ENGINE</span>
+            <h2>單機 AI 對戰</h2>
+            <p>挑戰三段難度 AI 策略電腦，記錄勝敗場次與最近 5 場棋局流程演練。</p>
+            <div class="poster-cta">配置 AI 對局 →</div>
+          </div>
+        </button>
+      </div>
+
+      <!-- STEP 2A: Online Sub-Menu (Ranked vs Friends) -->
+      <div id="landing-step-online" class="sub-panel hidden">
+        <div class="sub-panel-head">
+          <button type="button" class="btn btn-hud btn-sm" id="btn-online-back">← 返回模式選擇</button>
+          <div class="sub-panel-title">線上多人對戰大廳</div>
+          <div id="landing-rp-pill" class="rp-pill" title="線上積分賽段位與積分">
+            <span id="landing-tier-badge" class="tier-badge tier-gold">黃金</span>
+            <strong id="landing-rp-val">1200 RP</strong>
+            <span id="online-my-rank-chip" class="rp-rank-tag">排名 #7</span>
+          </div>
+        </div>
+
+        <div class="online-id-summary">
+          <span>玩家 ID：<strong id="online-id-display">策略玩家</strong></span>
+          <span class="chip">已鎖定</span>
+        </div>
+
+        <div class="mode-cards-grid sub-cards-grid">
+          <div class="mode-hero-card card-ranked">
+            <div class="card-top-tag">RANKED LOBBY · 全球統一積分大廳</div>
+            <div class="card-icon-row">
+              <h2>線上積分對戰</h2>
+              <span id="ranked-card-rp" class="card-sub-pill">1200 RP · 黃金</span>
+            </div>
+            <p>進入<strong>積分個人大廳</strong>查看即時在線人數、全服共享戰績表，自由選擇「和 AI 對戰」或「排隊配對真人」！</p>
+            <div class="sub-card-actions">
+              <button type="button" id="btn-start-ranked-quick" class="btn btn-esports-red btn-lg">進入線上積分大廳 →</button>
+            </div>
+          </div>
+
+          <div class="mode-hero-card card-friends">
+            <div class="card-top-tag">PRIVATE ROOM · 好友連線</div>
+            <div class="card-icon-row">
+              <h2>邀請好友對戰</h2>
+              <span class="card-sub-pill">6 碼房號 · 勝敗與演練</span>
+            </div>
+            <p>建立 2 人或 3 人專屬房間分享連結，右側顯示<strong>好友勝敗場統計與最近 5 場流程演練</strong>。</p>
+            <div class="sub-card-actions">
+              <button type="button" id="btn-friend-create" class="btn btn-esports-blue btn-lg">✦ 建立好友房間</button>
+              <button type="button" id="btn-friend-join" class="btn btn-hud">輸入房號加入</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 2B: Solo AI Loadout Sub-Menu -->
+      <div id="landing-step-solo" class="sub-panel hidden">
+        <div class="sub-panel-head">
+          <button type="button" class="btn btn-hud btn-sm" id="btn-solo-back">← 返回主選單</button>
+          <div class="sub-panel-title">單機 AI 對戰配置</div>
+          <span id="solo-record-chip" class="chip">戰績 0 勝 0 敗</span>
+        </div>
+
+        <div class="solo-loadout-grid">
+          <div class="loadout-group">
+            <label class="form-label">規則版本</label>
+            <div class="segmented" id="solo-opt-variant">
+              <button type="button" class="seg-btn active" data-value="v2"><strong>牆壁圍棋 Ⅱ</strong><span>■ 方形＋● 圓形</span></button>
+              <button type="button" class="seg-btn" data-value="classic"><strong>牆壁圍棋 Ⅰ</strong><span>經典全能棋</span></button>
+            </div>
+          </div>
+
+          <div class="loadout-group">
+            <label class="form-label">對戰人數</label>
+            <div class="segmented" id="solo-opt-players">
+              <button type="button" class="seg-btn active" data-value="2"><strong>2 人單挑</strong><span>紅 vs 藍（各 4 棋）</span></button>
+              <button type="button" class="seg-btn" data-value="3"><strong>3 人牢獄戰</strong><span>各 2 棋＋破牆鐵鎚</span></button>
+            </div>
+          </div>
+
+          <div class="loadout-group loadout-group-full">
+            <label class="form-label">AI 強度</label>
+            <div class="segmented segmented-5" id="solo-opt-ai">
+              <button type="button" class="seg-btn" data-value="easy"><strong>新手</strong><span>輕鬆</span></button>
+              <button type="button" class="seg-btn active" data-value="medium"><strong>策略</strong><span>平衡</span></button>
+              <button type="button" class="seg-btn" data-value="hard"><strong>魔鬼級</strong><span>強敵</span></button>
+              <button type="button" class="seg-btn" data-value="gm"><strong>大師級</strong><span>天梯 #2</span></button>
+              <button type="button" class="seg-btn" data-value="god"><strong>宗師魔王</strong><span>天梯 #1</span></button>
+            </div>
+          </div>
+
+          <div class="loadout-group" id="solo-group-opening">
+            <label class="form-label">開局配置</label>
+            <div class="segmented" id="solo-opt-opening">
+              <button type="button" class="seg-btn active" data-value="classic"><strong>標準開局</strong><span>預放 2 棋＋輪放 2 棋</span></button>
+              <button type="button" class="seg-btn" data-value="free"><strong>全自由落子</strong><span>8 顆棋自行佈局</span></button>
+            </div>
+          </div>
+
+          <div class="loadout-group">
+            <label class="form-label">回合倒數計時</label>
+            <div class="segmented" id="solo-opt-timer">
+              <button type="button" class="seg-btn active" data-value="off"><strong>不限時</strong><span>自由深度思考</span></button>
+              <button type="button" class="seg-btn" data-value="on"><strong>⏱ 開啟計時</strong><span>思考 90s / 築牆 30s</span></button>
+            </div>
+          </div>
+        </div>
+
+        <div class="solo-launch-row">
+          <button type="button" id="btn-solo-launch" class="btn btn-esports-red btn-xl">▶ 進入競技場・開始對戰</button>
+        </div>
+      </div>
+    </div>
+
+    <footer class="landing-footer">
+      <button type="button" id="btn-landing-rules" class="btn-icon-glass btn-back-glass">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        <span>遊戲規則</span>
+      </button>
+      <span class="landing-hint">快捷鍵：F 全螢幕 · Z 單機悔棋</span>
+    </footer>
+  </section>
+
+  <!-- ==================== VIEW 1.5: RANKED PERSONAL PROFILE LOBBY ==================== -->
+  <section id="view-ranked-lobby" class="rl-shell hidden">
+    <div class="rl-bg" aria-hidden="true"></div>
+    <div class="rl-vignette" aria-hidden="true"></div>
+
+    <header class="rl-topbar">
+      <div class="arena-brand-left">
+        <button id="btn-rl-back" class="btn-icon-glass btn-back-glass">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          <span>返回</span>
+        </button>
+        <strong class="rl-topbar-title">WALL GO Ⅱ · 線上積分大廳</strong>
+      </div>
+      <div class="topbar-actions">
+        <span class="rl-online-pill">
+          <span class="live-dot"></span>
+          在線人數 <strong id="rl-online-count">1</strong> 人
+        </span>
+        <button id="btn-rl-rules" class="btn-icon-glass btn-back-glass">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          <span>規則</span>
+        </button>
+      </div>
+    </header>
+
+    <main class="rl-main">
+      <!-- Left: Personal Profile + Two Match Buttons + Live Queue Status + Recent 5 -->
+      <section class="rl-profile-col">
+        <div class="panel rl-profile-card">
+          <div class="rl-profile-head">
+            <div>
+              <div class="rl-kicker">PLAYER PROFILE</div>
+              <div class="rl-name-row">
+                <h2 id="rl-player-name">策略玩家</h2>
+                <span id="rl-tier-badge" class="tier-badge tier-gold">黃金</span>
+              </div>
+            </div>
+            <span class="presence-badge presence-online">🟢 在線中</span>
+          </div>
+
+          <!-- 3 Core Stats: RP / Rank / Win Rate -->
+          <div class="rl-kpi-grid">
+            <div class="rl-kpi-box">
+              <span class="rl-kpi-label">目前積分</span>
+              <strong id="rl-rp" class="rl-kpi-val val-rp">1200</strong>
+            </div>
+            <div class="rl-kpi-box">
+              <span class="rl-kpi-label">全服名次</span>
+              <strong id="rl-rank" class="rl-kpi-val val-rank">#7</strong>
+            </div>
+            <div class="rl-kpi-box">
+              <span class="rl-kpi-label">總勝率</span>
+              <strong id="rl-winrate" class="rl-kpi-val val-wr">0%</strong>
+            </div>
+          </div>
+
+          <!-- Proportional Win/Draw/Loss Bar -->
+          <div class="rl-bar-wrap">
+            <div class="ratio-bar-track">
+              <div id="rl-seg-win" class="ratio-seg seg-win" style="width:0%"></div>
+              <div id="rl-seg-draw" class="ratio-seg seg-draw" style="width:0%"></div>
+              <div id="rl-seg-loss" class="ratio-seg seg-loss" style="width:0%"></div>
+            </div>
+            <div class="ratio-legend">
+              <span class="ratio-item"><i class="r-dot dot-win"></i>勝 <strong id="rl-wins">0</strong></span>
+              <span class="ratio-item"><i class="r-dot dot-loss"></i>敗 <strong id="rl-losses">0</strong></span>
+              <span class="ratio-item"><i class="r-dot dot-draw"></i>平 <strong id="rl-draws">0</strong></span>
+            </div>
+          </div>
+
+          <!-- Two Primary Mode Buttons -->
+          <div id="rl-action-btns" class="rl-action-grid">
+            <button type="button" id="btn-rl-vs-ai" class="btn btn-esports-blue btn-lg">
+              🤖 和 AI 對戰（積分賽）
+            </button>
+            <button type="button" id="btn-rl-queue-human" class="btn btn-esports-red btn-lg">
+              ⚔️ 排隊真人對戰
+            </button>
+          </div>
+
+          <!-- Indefinite Live Human Queue Banner -->
+          <div id="rl-queue-box" class="rl-queue-box hidden">
+            <div class="rl-queue-left">
+              <div class="mm-spinner rl-spinner-sm"></div>
+              <div>
+                <div id="rl-queue-title" class="rl-queue-title">正在排隊配對空閒的在線真人玩家…</div>
+                <div id="rl-queue-timer" class="rl-queue-sub">已排隊 00:00 · 將持續等待直到配對成功</div>
+              </div>
+            </div>
+            <button type="button" id="btn-rl-leave-queue" class="btn btn-hud btn-sm">✕ 離開排隊</button>
+          </div>
+        </div>
+
+        <!-- Recent 5 Ranked Replays -->
+        <div class="panel">
+          <div class="panel-header">
+            <h2>最近 5 場積分戰績</h2>
+            <span class="record-total-tag">可點看演練</span>
+          </div>
+          <div id="rl-recent-list" class="recent-matches-list"></div>
+        </div>
+      </section>
+
+      <!-- Right: Shared Global Real-Time Leaderboard -->
+      <aside class="rl-board-col">
+        <div class="panel rl-lb-panel">
+          <div class="panel-header">
+            <h2>🏆 全服共享即時積分排行榜</h2>
+            <span id="rl-lb-count" class="record-total-tag">10 位選手</span>
+          </div>
+          <div id="rl-leaderboard-list" class="leaderboard-list rl-lb-tall"></div>
+        </div>
+      </aside>
+    </main>
+  </section>
+
+  <!-- ==================== VIEW 2: VIDEO GAME BATTLE ARENA ==================== -->
+  <div id="view-arena" class="arena-shell hidden">
+    <!-- Slim Utility Topbar (Buttons tucked cleanly inside MENU dropdown!) -->
+    <header class="arena-topbar">
+      <div class="arena-brand-left">
+        <div class="arena-title-chip">
+          <strong class="arena-logo-sm">WALL GO Ⅱ</strong>
+          <span id="mode-tag" class="chip chip-accent">Ⅱ代 · 單機 AI</span>
+        </div>
+      </div>
+
+      <div class="topbar-actions">
+        <button id="online-pill" class="btn btn-online-active hidden" title="查看線上房間狀態">
+          <span class="live-dot"></span><span id="online-pill-text">房號 ------</span>
+        </button>
+        <div class="menu-wrap">
+          <button id="btn-arena-menu" class="btn btn-menu" aria-expanded="false" aria-haspopup="true">
+            ☰ MENU
+          </button>
+          <div id="arena-menu-drawer" class="menu-drawer hidden" role="menu">
+            <button id="btn-new-game" class="menu-item menu-item-primary" role="menuitem">＋ 開新對局</button>
+            <button id="btn-undo" class="menu-item" role="menuitem" disabled>↩ 悔棋 (Z)</button>
+            <button id="btn-online" class="menu-item hidden" role="menuitem">🌐 線上房間大廳</button>
+            <button id="btn-rules" class="menu-item" role="menuitem">📖 遊戲規則</button>
+            <button id="btn-sound" class="menu-item" role="menuitem" aria-pressed="true">
+              <span id="sound-icon">🔊</span> 全部音效：開
+            </button>
+            <button id="btn-bgm" class="menu-item" role="menuitem" aria-pressed="true">
+              <span id="bgm-icon">🎵</span> <span id="bgm-label">背景音樂：開</span>
+            </button>
+            <button id="btn-fullscreen" class="menu-item" role="menuitem" aria-pressed="false">
+              <span id="fs-label">⛶ 切換全螢幕</span>
+            </button>
+            <div class="menu-divider"></div>
+            <button id="btn-back-landing" class="menu-item menu-item-danger" role="menuitem">← 返回主選單</button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- FULL-WIDTH DYNAMIC SLANTED/CHEVRON RED-BLUE VS BANNER -->
+    <section id="vs-banner" class="vs-banner turn-p0" role="status" aria-live="polite">
+      <!-- Dynamic Slanted Background Layers (2P Mode) -->
+      <div class="vs-bg-blue" aria-hidden="true"></div>
+      <div class="vs-bg-red" aria-hidden="true"></div>
+      <div class="vs-bg-seam" aria-hidden="true"></div>
+
+      <!-- Left: RED SIDE -->
+      <div id="vs-side-0" class="vs-side vs-red active">
+        <div id="vs-score-0" class="vs-big-score">0</div>
+        <div class="vs-player-info">
+          <span id="vs-name-0" class="vs-player-name">策略玩家</span>
+          <span id="vs-turn-pill-0" class="vs-turn-pill">▶ 輪到行動</span>
+        </div>
+      </div>
+
+      <!-- Center Unboxed Giant VS + Tiny Round Number (glides with slanted seam!) -->
+      <div class="vs-center-core">
+        <div class="vs-emblem-text">VS</div>
+        <div id="vs-turn-counter" class="vs-round-tag">開局佈子</div>
+      </div>
+
+      <!-- Optional 3rd Player Gold Slot (shown only in 3P) -->
+      <div id="vs-side-2" class="vs-side vs-gold hidden">
+        <div class="vs-player-info">
+          <span id="vs-name-2" class="vs-player-name">玩家 3</span>
+          <span id="vs-turn-pill-2" class="vs-turn-pill hidden">▶ 輪到行動</span>
+        </div>
+        <div id="vs-score-2" class="vs-big-score">0</div>
+      </div>
+
+      <!-- Right: BLUE SIDE -->
+      <div id="vs-side-1" class="vs-side vs-blue">
+        <div class="vs-player-info vs-info-right">
+          <span id="vs-name-1" class="vs-player-name">策略AI</span>
+          <span id="vs-turn-pill-1" class="vs-turn-pill hidden">▶ 輪到行動</span>
+        </div>
+        <div id="vs-score-1" class="vs-big-score">0</div>
+      </div>
+    </section>
+
+    <!-- Countdown Progress Track -->
+    <div id="timer-bar-track" class="timer-bar-track hidden">
+      <div id="timer-bar-fill" class="timer-bar-fill"></div>
+    </div>
+
+    <!-- Tactical Instruction Bar (Normal Live Play) -->
+    <div id="tactical-strip" class="tactical-strip">
+      <div class="tactical-left">
+        <span id="turn-dot" class="player-dot"></span>
+        <span id="turn-badge" class="chip chip-accent">開局佈子</span>
+        <span id="turn-instruction" class="turn-instruction">請選擇棋盤上的空格放置你的棋子</span>
+      </div>
+      <div class="tactical-actions">
+        <div id="turn-timer" class="vs-timer hidden" aria-label="回合倒數計時">
+          <span id="timer-phase-label" class="timer-phase">思考</span>
+          <span id="timer-clock" class="timer-clock">01:30</span>
+        </div>
+        <button id="btn-cancel-move" class="btn btn-sm btn-warning hidden">取消移動</button>
+        <button id="btn-hammer" class="btn btn-sm btn-hammer hidden" title="敲破緊鄰己方棋子的一道牆壁">
+          🔨 使用破牆鐵鎚 (<span id="hammer-count">1</span>)
+        </button>
+        <button id="btn-end-hammer" class="btn btn-sm btn-hud hidden">不破牆・直接結算</button>
+      </div>
+    </div>
+
+    <!-- Interactive Replay Theater Bar (Shown ONLY during Replay Mode) -->
+    <div id="replay-bar" class="replay-bar hidden">
+      <div class="replay-head-row">
+        <div class="replay-title-wrap">
+          <span class="chip chip-gold">🎬 歷史對戰流程演練</span>
+          <strong id="replay-match-title">對局回放</strong>
+          <span id="replay-step-counter" class="replay-step-counter">第 0 / 0 手</span>
+        </div>
+        <button id="btn-replay-exit" class="btn btn-sm btn-esports-red">✕ 結束演練・返回戰場</button>
+      </div>
+      <div id="replay-step-desc" class="replay-step-desc">開局初始盤面</div>
+      <div class="replay-controls-row">
+        <button id="btn-rp-first" class="btn btn-sm btn-hud" title="回到開局">⏮</button>
+        <button id="btn-rp-prev" class="btn btn-sm btn-hud" title="上一步">◀ 上手</button>
+        <button id="btn-rp-play" class="btn btn-sm btn-esports-blue">▶ 自動演練</button>
+        <button id="btn-rp-next" class="btn btn-sm btn-hud" title="下一步">下手 ▶</button>
+        <button id="btn-rp-last" class="btn btn-sm btn-hud" title="跳至終局">⏭</button>
+        <input id="replay-slider" class="replay-slider" type="range" min="0" max="0" value="0" />
+        <button id="btn-rp-speed" class="btn btn-sm btn-hud" title="調整播放速度">1×</button>
+      </div>
+    </div>
+
+    <!-- Main Battle Stage Grid -->
+    <main class="arena">
+      <!-- Board Center Stage -->
+      <section class="board-stage">
+        <div class="board-frame">
+          <div class="coord-top" id="coord-top" aria-hidden="true"></div>
+          <div class="board-middle">
+            <div class="coord-left" id="coord-left" aria-hidden="true"></div>
+            <div class="board-wrapper">
+              <div id="board" class="board" role="grid" aria-label="牆壁圍棋 7乘7 棋盤">
+                <div id="cells-layer" class="cells-layer"></div>
+                <div id="walls-layer" class="walls-layer"></div>
+                <div id="pieces-layer" class="pieces-layer"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="board-legend" id="board-legend">
+          <span class="legend-item legend-v2"><i class="swatch swatch-square"></i> ■ 方形棋：直線 1–2 格</span>
+          <span class="legend-item legend-v2"><i class="swatch swatch-circle"></i> ● 圓形棋：1 格或 L 型轉彎</span>
+          <span class="legend-item"><i class="swatch swatch-move"></i> 可移動格</span>
+          <span class="legend-item"><i class="swatch swatch-wall"></i> 可築牆邊界</span>
+          <span class="legend-item"><i class="swatch swatch-locked"></i> 已鎖定領地</span>
+          <span class="legend-item"><i class="swatch swatch-dead"></i> 中立死區 (0分)</span>
+        </div>
+
+        <div id="postgame-lobby-bar" class="postgame-lobby-bar hidden">
+          <button type="button" id="btn-postgame-lobby" class="btn btn-esports-red btn-postgame-lobby">
+            ← 返回大廳
+          </button>
+        </div>
+      </section>
+
+      <!-- Right Mode-Specific HUD Dashboard -->
+      <aside id="arena-dashboard" class="dashboard">
+        <!-- PANEL C: Online Player Chat (Top priority during P2P Human matches) -->
+        <div class="panel panel-chat hidden" id="panel-chat">
+          <div class="panel-header">
+            <h2>💬 玩家即時對話</h2>
+            <button id="btn-leave-room-mini" class="btn btn-sm btn-hud">離開對局</button>
+          </div>
+          <div id="chat-messages" class="chat-messages"></div>
+          <div class="quick-emotes" id="quick-emotes">
+            <button type="button" class="emote-btn" data-text="👏 好棋！">👏 好棋</button>
+            <button type="button" class="emote-btn" data-text="🤔 讓我想想…">🤔 思考</button>
+            <button type="button" class="emote-btn" data-text="😱 完蛋了！">😱 完蛋</button>
+            <button type="button" class="emote-btn" data-text="🔥 精彩攻防！">🔥 精彩</button>
+          </div>
+          <form id="chat-form" class="chat-form">
+            <input id="chat-input" type="text" maxlength="80" placeholder="輸入訊息給對手…" autocomplete="off" />
+            <button type="submit" class="btn btn-sm btn-esports-blue">送出</button>
+          </form>
+        </div>
+
+        <!-- PANEL A: RANKED LEADERBOARD (Shown in Ranked vs AI / Replay; hidden in Ranked Human-vs-Human) -->
+        <div class="panel panel-leaderboard hidden" id="panel-leaderboard">
+          <div class="panel-header">
+            <h2>🏆 線上積分排行榜</h2>
+            <span id="lb-my-tier-chip" class="chip chip-gold">1200 RP</span>
+          </div>
+          <div id="leaderboard-list" class="leaderboard-list"></div>
+        </div>
+
+        <!-- PANEL B: W/L PROPORTIONAL BAR + LAST 5 MATCHES WITH REPLAY -->
+        <div class="panel panel-record" id="panel-record">
+          <div class="panel-header">
+            <h2 id="record-panel-title">單機 AI 戰績</h2>
+            <span id="record-winrate-chip" class="record-total-tag">共 0 場</span>
+          </div>
+
+          <div id="record-wld-grid" class="winrate-widget">
+            <div class="winrate-big-col">
+              <strong id="stat-winrate" class="winrate-big-num">0%</strong>
+              <span class="winrate-big-label">勝率</span>
+            </div>
+            <div class="winrate-bar-col">
+              <div class="ratio-bar-track" aria-label="勝敗平比例線">
+                <div id="ratio-seg-win" class="ratio-seg seg-win" style="width:0%"></div>
+                <div id="ratio-seg-draw" class="ratio-seg seg-draw" style="width:0%"></div>
+                <div id="ratio-seg-loss" class="ratio-seg seg-loss" style="width:0%"></div>
+              </div>
+              <div class="ratio-legend">
+                <span class="ratio-item"><i class="r-dot dot-win"></i>勝 <strong id="stat-wins">0</strong></span>
+                <span class="ratio-item"><i class="r-dot dot-loss"></i>敗 <strong id="stat-losses">0</strong></span>
+                <span class="ratio-item"><i class="r-dot dot-draw"></i>平 <strong id="stat-draws">0</strong></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="recent-section-head">
+            <span>最近 5 場對戰紀錄</span>
+            <small>點擊可看演練</small>
+          </div>
+          <div id="recent-matches-list" class="recent-matches-list"></div>
+        </div>
+
+        <!-- PANEL D: Live Move Log -->
+        <div class="panel panel-log">
+          <div class="panel-header">
+            <h2>📜 本局走法紀錄</h2>
+            <span id="turn-counter" class="chip">第 1 回合</span>
+          </div>
+          <ol id="move-log" class="move-log"></ol>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <!-- ==================== CINEMATIC OVERLAYS ==================== -->
+  <div id="urgent-vignette" class="urgent-vignette" aria-hidden="true"></div>
+  <div id="turn-callout" class="turn-callout hidden" aria-hidden="true"></div>
+
+  <!-- Minimalist Full-Screen Split First-Turn Spinner Overlay -->
+  <div id="first-turn-overlay" class="first-turn-overlay hidden" aria-live="polite">
+    <div id="ft-split-bg" class="ft-split-bg">
+      <div id="ft-half-0" class="ft-half ft-half-red">
+        <div class="ft-half-content">
+          <div id="ft-name-0" class="ft-half-name">紅方</div>
+          <div id="ft-badge-0" class="ft-first-label hidden">先手</div>
+        </div>
+      </div>
+      <div id="ft-half-1" class="ft-half ft-half-blue">
+        <div class="ft-half-content">
+          <div id="ft-name-1" class="ft-half-name">藍方</div>
+          <div id="ft-badge-1" class="ft-first-label hidden">先手</div>
+        </div>
+      </div>
+      <div id="ft-half-2" class="ft-half ft-half-gold hidden">
+        <div class="ft-half-content">
+          <div id="ft-name-2" class="ft-half-name">金方</div>
+          <div id="ft-badge-2" class="ft-first-label hidden">先手</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ft-center-ring" aria-hidden="true">
+      <div id="ft-spinner-rotor" class="ft-spinner-rotor">
+        <svg class="ft-spinner-svg" viewBox="0 0 160 160" width="160" height="160">
+          <!-- Pointed arrow at 12 o'clock -->
+          <polygon points="80,6 98,42 62,42" fill="#ffffff"/>
+          <!-- Clean minimalist spinning circle -->
+          <circle cx="80" cy="80" r="46" fill="#ffffff"/>
+          <circle cx="80" cy="80" r="34" fill="none" stroke="#0f172a" stroke-width="5" opacity="0.16"/>
+          <circle cx="80" cy="80" r="9" fill="#0f172a" opacity="0.24"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- Souls-like Defeat Screen Overlay -->
+  <div id="souls-overlay" class="souls-overlay hidden" role="dialog" aria-label="敗北畫面">
+    <div class="souls-band">
+      <div class="souls-title">YOU LOSE</div>
+      <div id="souls-subtitle" class="souls-subtitle">敗北 · 領地爭奪戰落敗</div>
+      <div class="souls-hint">點擊任意處檢視最終結算</div>
+    </div>
+  </div>
+
+  <canvas id="confetti-canvas" class="confetti-canvas hidden" aria-hidden="true"></canvas>
+  <div id="toast" class="toast hidden" role="alert"></div>
+
+  <!-- ==================== MODALS ==================== -->
+  <!-- Quick New Match Modal (from inside Arena) -->
+  <div id="modal-setup" class="modal-backdrop hidden">
+    <div class="modal modal-setup" role="dialog" aria-modal="true" aria-labelledby="setup-title">
+      <div class="modal-header">
+        <div>
+          <p class="modal-kicker">NEW MATCH CONFIG</p>
+          <h2 id="setup-title">快速開新對局</h2>
+        </div>
+        <button class="modal-close" data-close="modal-setup" aria-label="關閉">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">規則版本</label>
+          <div class="segmented" id="opt-rule-variant">
+            <button type="button" class="seg-btn active" data-value="v2"><strong>牆壁圍棋 Ⅱ</strong><span>■ 方形＋● 圓形</span></button>
+            <button type="button" class="seg-btn" data-value="classic"><strong>牆壁圍棋 Ⅰ</strong><span>經典全能棋</span></button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">人數設定</label>
+          <div class="segmented" id="opt-player-count">
+            <button type="button" class="seg-btn active" data-value="2"><strong>2 人對決</strong><span id="desc-2p">各 4 棋</span></button>
+            <button type="button" class="seg-btn" data-value="3"><strong>3 人牢獄戰</strong><span id="desc-3p">各 2 棋＋鐵鎚</span></button>
+          </div>
+        </div>
+        <div class="form-group" id="group-ai-level">
+          <label class="form-label">AI 強度</label>
+          <div class="segmented segmented-5" id="opt-ai-level">
+            <button type="button" class="seg-btn" data-value="easy"><strong>新手</strong><span>輕鬆</span></button>
+            <button type="button" class="seg-btn active" data-value="medium"><strong>策略</strong><span>平衡</span></button>
+            <button type="button" class="seg-btn" data-value="hard"><strong>魔鬼級</strong><span>強敵</span></button>
+            <button type="button" class="seg-btn" data-value="gm"><strong>大師級</strong><span>天梯 #2</span></button>
+            <button type="button" class="seg-btn" data-value="god"><strong>宗師魔王</strong><span>天梯 #1</span></button>
+          </div>
+        </div>
+        <div class="form-group" id="group-opening">
+          <label class="form-label">雙人開局配置</label>
+          <div class="segmented" id="opt-opening">
+            <button type="button" class="seg-btn active" data-value="classic"><strong>標準開局</strong><span>預放 2 棋＋輪放 2 棋</span></button>
+            <button type="button" class="seg-btn" data-value="free"><strong>全自由落子</strong><span>8 顆棋自行佈局</span></button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">回合倒數計時</label>
+          <div class="segmented" id="opt-timer">
+            <button type="button" class="seg-btn active" data-value="off"><strong>不限時</strong><span>自由思考</span></button>
+            <button type="button" class="seg-btn" data-value="on"><strong>⏱ 計時制</strong><span>90s 思考 / 30s 築牆</span></button>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-hud" data-close="modal-setup">取消</button>
+        <button id="btn-start-match" class="btn btn-esports-red btn-lg">進入對決</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Rules Modal -->
+  <div id="modal-rules" class="modal-backdrop hidden">
+    <div class="modal modal-rules" role="dialog" aria-modal="true" aria-labelledby="rules-title">
+      <div class="modal-header">
+        <div>
+          <p class="modal-kicker">OFFICIAL RULEBOOK</p>
+          <h2 id="rules-title">牆壁圍棋規則說明</h2>
+        </div>
+        <button class="modal-close" data-close="modal-rules" aria-label="關閉">✕</button>
+      </div>
+      <div class="modal-body rules-content">
+        <div class="rule-card">
+          <h3>1. 勝負目標</h3>
+          <p>在 <strong>7×7</strong> 棋盤上利用牆壁圍出專屬領地。當區域被牆壁完全封閉且<strong>內部只有同一位玩家的棋子</strong>時，該區每一格計 <strong>1 分</strong>。最終總分最高者獲勝（同分時以單塊最大領地較大者勝）。</p>
+        </div>
+        <div class="rule-card rule-card-accent">
+          <h3>2. 牆壁圍棋 Ⅱ：方形棋 ■ 與圓形棋 ● 的差異</h3>
+          <ul>
+            <li><strong>■ 方形棋（直線型）</strong>：只能沿上下左右<strong>單一直線</strong>移動 <strong>1 或 2 格</strong>（<strong>不可轉彎、不可原地不動</strong>）。</li>
+            <li><strong>● 圓形棋（轉彎型）</strong>：可移動 <strong>1 格</strong>，或走 1 格後<strong>向左／向右 90° 轉彎再走 1 格</strong>（L 型走法，<strong>不可直走 2 格、不可原地不動</strong>）。</li>
+          </ul>
+        </div>
+        <div class="rule-card">
+          <h3>3. 每回合兩步驟（缺一不可）</h3>
+          <ol>
+            <li><strong>強制移動棋子（1～2 格）</strong>：選一顆己方棋子依規則移動至新格（不可原地不動、不可穿牆或跨棋）。</li>
+            <li><strong>強制築牆</strong>：移動結束後，必須在該顆棋子的上、下、左、右任一開放邊界蓋上一道牆。</li>
+          </ol>
+        </div>
+        <div class="rule-card">
+          <h3>4. 積分賽、勝敗統計與歷史演練</h3>
+          <ul>
+            <li><strong>線上積分對戰</strong>：依對手積分採 ELO 計算加減分，即時更新右側全服積分排行榜。</li>
+            <li><strong>歷史對戰流程演練</strong>：系統自動保存單機／好友／積分各最近 5 場完整棋譜，隨時可按 <strong>▶ 流程演練</strong> 逐步回看攻防細節！</li>
+          </ul>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-esports-red" data-close="modal-rules">明白了，進入戰場</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Game Over Modal -->
+  <div id="modal-gameover" class="modal-backdrop hidden">
+    <div class="modal modal-gameover" role="dialog" aria-modal="true" aria-labelledby="gameover-title">
+      <div class="modal-header">
+        <div>
+          <p class="modal-kicker">MATCH CONCLUDED</p>
+          <h2 id="gameover-title">對局結算</h2>
+        </div>
+        <button class="modal-close" data-close="modal-gameover" aria-label="關閉">✕</button>
+      </div>
+      <div class="modal-body">
+        <div id="winner-banner" class="winner-banner"></div>
+        <div id="rp-delta-banner" class="rp-delta-banner hidden"></div>
+        <div id="final-scores" class="final-scores"></div>
+      </div>
+      <div class="modal-footer modal-footer-split">
+        <button id="btn-replay-this-match" class="btn btn-hud">🎬 演練本局棋譜</button>
+        <div class="footer-right-group">
+          <button id="btn-online-rematch" class="btn btn-esports-blue hidden">同房再戰一局</button>
+          <span id="guest-rematch-wait" class="chip hidden">等待房主開啟下一局…</span>
+          <button id="btn-play-again" class="btn btn-esports-red">再來一局</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Online Multiplayer Lobby Modal (Shared for Friends & Ranked P2P Rooms) -->
+  <div id="modal-online" class="modal-backdrop hidden">
+    <div class="modal modal-online" role="dialog" aria-modal="true" aria-labelledby="online-title">
+      <div class="modal-header">
+        <div>
+          <p id="online-kicker" class="modal-kicker">WEBRTC P2P MULTIPLAYER</p>
+          <h2 id="online-title">🌐 好友對戰房間</h2>
+        </div>
+        <button class="modal-close" data-close="modal-online" aria-label="關閉">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div id="online-entry-view">
+          <div class="online-tabs" id="online-tabs">
+            <button type="button" class="online-tab active" data-tab="create">建立房間（產生房號）</button>
+            <button type="button" class="online-tab" data-tab="join">加入房間（輸入房號）</button>
+          </div>
+
+          <div class="form-group" style="margin-top:12px;">
+            <label class="form-label" for="input-nickname">你的對戰稱號（已鎖定）</label>
+            <input id="input-nickname" class="text-input" type="text" maxlength="14" readonly />
+          </div>
+
+          <div id="online-tab-create" class="online-tab-panel">
+            <div class="form-group">
+              <label class="form-label">房間規則版本</label>
+              <div class="segmented" id="online-opt-variant">
+                <button type="button" class="seg-btn active" data-value="v2"><strong>牆壁圍棋 Ⅱ</strong><span>■ 方＋● 圓</span></button>
+                <button type="button" class="seg-btn" data-value="classic"><strong>牆壁圍棋 Ⅰ</strong><span>經典全能</span></button>
+              </div>
+            </div>
+
+            <div class="form-group" id="online-group-players">
+              <label class="form-label">人數設定</label>
+              <div class="segmented" id="online-opt-players">
+                <button type="button" class="seg-btn active" data-value="2"><strong>2 人單挑</strong><span>紅 vs 藍</span></button>
+                <button type="button" class="seg-btn" data-value="3"><strong>3 人牢獄戰</strong><span>含破牆鐵鎚</span></button>
+              </div>
+            </div>
+
+            <div class="form-group" id="online-group-opening">
+              <label class="form-label">雙人開局配置</label>
+              <div class="segmented" id="online-opt-opening">
+                <button type="button" class="seg-btn active" data-value="classic"><strong>標準開局</strong><span>預放 2＋輪放 2</span></button>
+                <button type="button" class="seg-btn" data-value="free"><strong>全自由落子</strong><span>8 棋自放</span></button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">回合倒數計時</label>
+              <div class="segmented" id="online-opt-timer">
+                <button type="button" class="seg-btn active" data-value="off"><strong>不限時</strong><span>自由思考</span></button>
+                <button type="button" class="seg-btn" data-value="on"><strong>⏱ 計時制</strong><span>90s / 30s</span></button>
+              </div>
+            </div>
+
+            <button id="btn-create-room" class="btn btn-esports-blue btn-lg" style="margin-top:6px;">
+              ✦ 建立房間並產生 6 碼房號
+            </button>
+          </div>
+
+          <div id="online-tab-join" class="online-tab-panel hidden">
+            <div class="form-group">
+              <label class="form-label" for="input-room-code">輸入 6 碼房間代碼</label>
+              <input id="input-room-code" class="text-input code-input" type="text" maxlength="8" placeholder="K7M4P9" autocomplete="off" />
+            </div>
+            <button id="btn-join-room" class="btn btn-esports-blue btn-lg" style="margin-top:6px;">
+              🔗 連線進入房間
+            </button>
+          </div>
+
+          <p id="online-status-msg" class="online-status-msg hidden"></p>
+        </div>
+
+        <div id="online-lobby-view" class="hidden">
+          <div class="room-code-box">
+            <div class="room-code-meta">
+              <span class="room-code-label">房間代碼</span>
+              <span id="lobby-rule-badge" class="chip chip-gold">牆壁圍棋 Ⅱ · 2人</span>
+            </div>
+            <div id="lobby-room-code" class="room-code-value">------</div>
+            <div class="room-share-actions">
+              <button id="btn-copy-code" class="btn btn-sm btn-hud">📋 複製房號</button>
+              <button id="btn-copy-link" class="btn btn-sm btn-hud">🔗 複製邀請連結</button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">對戰席位</label>
+            <div id="lobby-seats" class="lobby-seats"></div>
+          </div>
+
+          <p id="lobby-hint" class="lobby-hint">將 6 碼房號或邀請連結傳給朋友，連線後即可開戰。</p>
+
+          <div class="lobby-actions">
+            <button id="btn-leave-room" class="btn btn-hud">離開房間</button>
+            <button id="btn-host-start" class="btn btn-esports-red hidden" disabled>等待對手加入…</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ranked Matchmaking Searching Overlay (Shared Public Lobby) -->
+  <div id="modal-matchmaking" class="modal-backdrop hidden">
+    <div class="modal modal-mm" role="dialog" aria-modal="true">
+      <div class="modal-body mm-body">
+        <div class="mm-spinner"></div>
+        <h3 id="mm-title">正在進入線上積分大廳…</h3>
+        <p id="mm-sub" class="mm-sub">正在搜尋同大廳的在線玩家</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;">
+          <button id="btn-mm-instant-ai" class="btn btn-esports-blue btn-sm">⚡ 立即對戰天梯 AI</button>
+          <button id="btn-cancel-mm" class="btn btn-hud btn-sm">取消配對</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mid-Match Leave / Reload Warning Modal -->
+  <div id="modal-leave-warn" class="modal-backdrop hidden">
+    <div class="modal modal-sm modal-leave-warn" role="dialog" aria-modal="true" aria-labelledby="leave-warn-title">
+      <div class="modal-header leave-warn-header">
+        <h2 id="leave-warn-title">⚠️ 你將離開遊戲</h2>
+      </div>
+      <div class="modal-body leave-warn-body">
+        <p class="leave-warn-desc">對局仍在進行中，<strong>離開遊戲算敗北</strong>並直接結算戰績。</p>
+        <p id="leave-warn-sub" class="leave-warn-sub">確定要離開目前棋局嗎？</p>
+      </div>
+      <div class="modal-footer leave-warn-footer">
+        <button type="button" id="btn-leave-confirm" class="btn btn-esports-red">離開</button>
+        <button type="button" id="btn-leave-stay" class="btn btn-esports-blue">繼續</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.5/dist/peerjs.min.js"></script>
+  <script src="sound.js?v=20261120v"></script>
+  <script src="stats.js?v=20261120v"></script>
+  <script src="lobby-hub.js?v=20261120v"></script>
+  <script src="engine.js?v=20261120v"></script>
+  <script src="ai.js?v=20261120v"></script>
+  <script src="network.js?v=20261120v"></script>
+  <script src="app.js?v=20261120v"></script>
+</body>
+</html>
