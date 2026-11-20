@@ -366,6 +366,22 @@
         this.currentPlayer = Number.isInteger(this.firstPlayer) ? this.firstPlayer : 0;
         this.turnNumber = 1;
         this.addLog(-1, `開局佈子完成！由 <strong>${this.players[this.currentPlayer].name}</strong> 率先展開領地爭奪戰。`);
+
+        // Edge-case safeguard: if any player already has zero legal moves immediately after placement, end the game.
+        const immobileAtStart = [];
+        for (let p = 0; p < this.numPlayers; p++) {
+          if (!this.hasAnyLegalMove(p) && this.getBreakableWalls(p, false).length === 0) {
+            immobileAtStart.push(this.players[p]);
+          }
+        }
+        if (immobileAtStart.length > 0) {
+          const names = immobileAtStart.map(pl => pl.name).join('、');
+          this.addLog(-1, `${names} 所有棋子均無法移動，依規則遊戲立即結束並結算領地！`);
+          this._finishGame(this.analyzeTerritories(), {
+            endReason: 'immobile',
+            immobilePlayers: immobileAtStart.map(pl => ({ player: pl.id, name: pl.name }))
+          });
+        }
       } else {
         this.currentPlayer = this.placementQueue[0].player;
       }
@@ -427,6 +443,17 @@
         }
       }
       return results;
+    }
+
+    // Fast early-exit check: whether playerId has at least one legal move+wall action
+    hasAnyLegalMove(playerId) {
+      const myPieces = this.getPlayerPieces(playerId);
+      for (const piece of myPieces) {
+        if (this.getValidDestinations(piece.id).length > 0) {
+          return true;
+        }
+      }
+      return false;
     }
 
     // All legal (pieceId, toR, toC, wall) tuples for playerId
@@ -626,30 +653,33 @@
         return;
       }
 
-      // Case 2: Contested regions still exist; find next player who has a legal move (or usable hammer)
+      // Case 2: If ANY player's pieces are completely unable to move (and have no usable 3P hammer),
+      // the match ends immediately and scores are settled.
       this.hammerOnlyEndgame = false;
-      for (let offset = 1; offset <= this.numPlayers; offset++) {
-        const cand = (this.currentPlayer + offset) % this.numPlayers;
-        const hasMove = this.getAllLegalActions(cand).length > 0;
-        const hasHammer = this.getBreakableWalls(cand, false).length > 0;
-        if (hasMove || hasHammer) {
-          if (offset > 1) {
-            for (let s = 1; s < offset; s++) {
-              const skipped = (this.currentPlayer + s) % this.numPlayers;
-              this.addLog(-1, `${this.players[skipped].name} 所有棋子均無法移動，跳過回合。`);
-            }
-          }
-          this.currentPlayer = cand;
-          this.turnNumber += 1;
-          return;
+      const immobilePlayers = [];
+      for (let p = 0; p < this.numPlayers; p++) {
+        const hasMove = this.hasAnyLegalMove(p);
+        const hasHammer = this.getBreakableWalls(p, false).length > 0;
+        if (!hasMove && !hasHammer) {
+          immobilePlayers.push(this.players[p]);
         }
       }
+      if (immobilePlayers.length > 0) {
+        const immobileNames = immobilePlayers.map(pl => pl.name).join('、');
+        this.addLog(-1, `${immobileNames} 所有棋子均無法移動，依規則遊戲立即結束並結算領地！`);
+        this._finishGame(analysis, {
+          endReason: 'immobile',
+          immobilePlayers: immobilePlayers.map(pl => ({ player: pl.id, name: pl.name }))
+        });
+        return;
+      }
 
-      // Nobody has any moves left
-      this._finishGame(analysis);
+      // Case 3: Every player still has at least one legal move (or usable hammer); advance to next player
+      this.currentPlayer = (this.currentPlayer + 1) % this.numPlayers;
+      this.turnNumber += 1;
     }
 
-    _finishGame(analysis) {
+    _finishGame(analysis, meta = null) {
       this.phase = 'gameover';
       this.hammerOnlyEndgame = false;
 
@@ -685,7 +715,9 @@
       this.result = {
         rankings,
         winners,
-        isDraw: winners.length > 1
+        isDraw: winners.length > 1,
+        endReason: (meta && meta.endReason) ? meta.endReason : 'separated',
+        immobilePlayers: (meta && Array.isArray(meta.immobilePlayers)) ? meta.immobilePlayers : []
       };
 
       if (this.result.isDraw) {

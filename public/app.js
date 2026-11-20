@@ -2648,9 +2648,12 @@
 
       if (eng.phase === 'gameover') {
         const w = eng.result && eng.result.winners[0];
+        const immNote = (eng.result && eng.result.endReason === 'immobile' && eng.result.immobilePlayers && eng.result.immobilePlayers.length)
+          ? `${eng.result.immobilePlayers.map(p => p.name).join('、')} 無子可動・`
+          : '';
         this.el.turnInstruction.textContent = eng.result && eng.result.isDraw
-          ? '對局平手結束！可從右側「最近 5 場戰績」隨時回看流程演練。'
-          : `對局結束！由 ${w ? w.name : ''} 以 ${w ? w.score : 0} 分奪勝！`;
+          ? `${immNote}對局平手結束！可從右側「最近 5 場戰績」隨時回看流程演練。`
+          : `${immNote}對局結束！由 ${w ? w.name : ''} 以 ${w ? w.score : 0} 分奪勝！`;
         return;
       }
 
@@ -3094,6 +3097,10 @@
       const res = this.engine.result;
       if (!res) return;
 
+      const immSuffix = (res.endReason === 'immobile' && Array.isArray(res.immobilePlayers) && res.immobilePlayers.length > 0)
+        ? `（${res.immobilePlayers.map(p => this._escapeHtml(p.name)).join('、')} 所有棋子已無法移動・立即結算）`
+        : '';
+
       if (res.forfeitWin) {
         const leftName = this._escapeHtml(res.leftName || '對手');
         this.el.winnerBanner.innerHTML = `
@@ -3105,13 +3112,13 @@
         this.el.winnerBanner.innerHTML = `
           <div class="winner-crown">⚖️</div>
           <div class="winner-title">${names} 勢均力敵・平手！</div>
-          <div class="winner-sub">雙方皆圍得 ${res.winners[0].score} 格領地（最大單塊 ${res.winners[0].largest} 格）</div>`;
+          <div class="winner-sub">雙方皆圍得 ${res.winners[0].score} 格領地（最大單塊 ${res.winners[0].largest} 格）${immSuffix}</div>`;
       } else {
         const w = res.winners[0];
         this.el.winnerBanner.innerHTML = `
           <div class="winner-crown">👑</div>
           <div class="winner-title">${this._escapeHtml(w.name)} 奪下勝利！</div>
-          <div class="winner-sub">共圍得 ${w.score} 格專屬領地（最大單塊 ${w.largest} 格）</div>`;
+          <div class="winner-sub">共圍得 ${w.score} 格專屬領地（最大單塊 ${w.largest} 格）${immSuffix}</div>`;
       }
 
       // Show RP Delta Banner in Ranked mode
