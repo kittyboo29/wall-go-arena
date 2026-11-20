@@ -43,8 +43,8 @@ interface SeedAiPro {
 
 const SEED_AI_PROS: SeedAiPro[] = [
   { id: "r_kyu",   name: "KyuMaster",     rp: 1790, wins: 48, losses: 11, draws: 2, aiLevel: "hard",   skill: 0.96, sortOrder: 1 },
-  { id: "r_orbit", name: "軌道計算師",     rp: 1645, wins: 39, losses: 14, draws: 3, aiLevel: "hard",   skill: 0.89, sortOrder: 2 },
-  { id: "r_seok",  name: "河錫辰・圍牆流", rp: 1530, wins: 34, losses: 16, draws: 2, aiLevel: "hard",   skill: 0.80, sortOrder: 3 },
+  { id: "r_orbit", name: "幽影壁壘",       rp: 1645, wins: 39, losses: 14, draws: 3, aiLevel: "hard",   skill: 0.89, sortOrder: 2 },
+  { id: "r_seok",  name: "絕境圍城",       rp: 1530, wins: 34, losses: 16, draws: 2, aiLevel: "hard",   skill: 0.80, sortOrder: 3 },
   { id: "r_hyun",  name: "HyunGyu_Pro",   rp: 1445, wins: 29, losses: 16, draws: 1, aiLevel: "hard",   skill: 0.74, sortOrder: 4 },
   { id: "r_nova",  name: "赤藍策士",       rp: 1350, wins: 25, losses: 17, draws: 2, aiLevel: "medium", skill: 0.64, sortOrder: 5 },
   { id: "r_tin",   name: "Tinno_99",      rp: 1270, wins: 21, losses: 16, draws: 1, aiLevel: "medium", skill: 0.56, sortOrder: 6 },

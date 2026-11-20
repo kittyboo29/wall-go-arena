@@ -5,7 +5,7 @@
 
   // 9-Tier AI Strength Profiles:
   // #1 (KyuMaster): Final Boss (3-ply Alpha-Beta + 4-ply Endgame + Voronoi Counter-Placement + 0 noise)
-  // #2 (軌道計算師 / Solo Hard): Grandmaster (3-ply Alpha-Beta + Counter-Placement)
+  // #2 (幽影壁壘 / Solo GM): Grandmaster (3-ply Alpha-Beta + Counter-Placement)
   // #3-#4: Strong Master / Diamond (2-ply Alpha-Beta + 3-ply Endgame for #3)
   // #5-#9: Smoothly descending strength curve from tactical 2-ply down to friendly rookie 1-ply
   const RANK_PROFILES = {

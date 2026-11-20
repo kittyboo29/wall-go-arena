@@ -1433,7 +1433,115 @@ button.mode-hero-card:hover { transform: translateY(-4px); background: rgba(255,
 .rl-queue-title { font-size: 0.92rem; font-weight: 900; color: #0f172a; }
 .rl-queue-sub { font-family: var(--font-mono); font-size: 0.76rem; color: #475569; margin-top: 2px; }
 
-.rl-lb-tall { max-height: 540px; }
+/* Ranked Lobby Fixed-Height Scroll Areas:
+   - #rl-recent-list: fits 2 match cards cleanly (58px * 2 + 6px gap = 122px); scrolls once > 2 items
+   - #rl-leaderboard-list: fits 10 player rows cleanly (40px * 10 + 5px * 9 = 445px); scrolls once > 10 items
+   Outer Ranked Lobby height stays locked regardless of match/player count. */
+#rl-recent-list {
+  height: 126px;
+  max-height: 126px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 6px;
+  overscroll-behavior: contain;
+}
+#rl-recent-list .match-hist-card {
+  height: 58px;
+  min-height: 58px;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+#rl-recent-list .recent-empty {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#rl-leaderboard-list.rl-lb-tall {
+  flex: 0 0 auto;
+  height: 448px;
+  max-height: 448px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 6px;
+  overscroll-behavior: contain;
+}
+#rl-leaderboard-list .lb-row {
+  height: 40px;
+  min-height: 40px;
+  padding: 0 10px;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+/* Custom-Designed Sleek Esports Scrollbar (replaces native browser scrollbar) */
+@supports not selector(::-webkit-scrollbar) {
+  #rl-recent-list,
+  #rl-leaderboard-list,
+  .leaderboard-list,
+  .chat-messages,
+  .move-log {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(59, 130, 246, 0.58) rgba(148, 163, 184, 0.14);
+  }
+}
+#rl-recent-list::-webkit-scrollbar,
+#rl-leaderboard-list::-webkit-scrollbar,
+.leaderboard-list::-webkit-scrollbar,
+.chat-messages::-webkit-scrollbar,
+.move-log::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+#rl-recent-list::-webkit-scrollbar-track,
+#rl-leaderboard-list::-webkit-scrollbar-track,
+.leaderboard-list::-webkit-scrollbar-track,
+.chat-messages::-webkit-scrollbar-track,
+.move-log::-webkit-scrollbar-track {
+  background: rgba(148, 163, 184, 0.16);
+  border-radius: 999px;
+  margin: 2px 0;
+}
+#rl-recent-list::-webkit-scrollbar-thumb,
+#rl-leaderboard-list::-webkit-scrollbar-thumb,
+.leaderboard-list::-webkit-scrollbar-thumb,
+.chat-messages::-webkit-scrollbar-thumb,
+.move-log::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(59, 130, 246, 0.62) 0%, rgba(99, 102, 241, 0.80) 100%);
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.48);
+}
+#rl-recent-list::-webkit-scrollbar-thumb:hover,
+#rl-leaderboard-list::-webkit-scrollbar-thumb:hover,
+.leaderboard-list::-webkit-scrollbar-thumb:hover,
+.chat-messages::-webkit-scrollbar-thumb:hover,
+.move-log::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #2563eb 0%, #4f46e5 100%);
+}
+#rl-recent-list::-webkit-scrollbar-thumb:active,
+#rl-leaderboard-list::-webkit-scrollbar-thumb:active,
+.leaderboard-list::-webkit-scrollbar-thumb:active,
+.chat-messages::-webkit-scrollbar-thumb:active,
+.move-log::-webkit-scrollbar-thumb:active {
+  background: linear-gradient(180deg, #1d4ed8 0%, #4338ca 100%);
+}
+#rl-recent-list::-webkit-scrollbar-button,
+#rl-leaderboard-list::-webkit-scrollbar-button,
+.leaderboard-list::-webkit-scrollbar-button,
+.chat-messages::-webkit-scrollbar-button,
+.move-log::-webkit-scrollbar-button {
+  display: none;
+  width: 0;
+  height: 0;
+}
+#rl-recent-list::-webkit-scrollbar-corner,
+#rl-leaderboard-list::-webkit-scrollbar-corner,
+.leaderboard-list::-webkit-scrollbar-corner,
+.chat-messages::-webkit-scrollbar-corner,
+.move-log::-webkit-scrollbar-corner {
+  background: transparent;
+}
 
 @media (max-width: 960px) {
   .rl-main { grid-template-columns: 1fr; padding: 16px 16px 32px; align-content: start; }

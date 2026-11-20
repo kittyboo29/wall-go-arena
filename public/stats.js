@@ -9,8 +9,8 @@
   // 9 fixed AI ladder pros (#1 & #2 are elite grandmasters; #3-#4 strong; #5-#9 smoothly descending)
   const SEED_AI_PROS = [
     { id: 'r_kyu',   name: 'KyuMaster',      isAI: true, rp: 1790, wins: 48, losses: 11, draws: 2, aiLevel: 'hard',   skill: 0.96, lastDelta: 0 },
-    { id: 'r_orbit', name: '軌道計算師',      isAI: true, rp: 1645, wins: 39, losses: 14, draws: 3, aiLevel: 'hard',   skill: 0.89, lastDelta: 0 },
-    { id: 'r_seok',  name: '河錫辰・圍牆流',  isAI: true, rp: 1530, wins: 34, losses: 16, draws: 2, aiLevel: 'hard',   skill: 0.80, lastDelta: 0 },
+    { id: 'r_orbit', name: '幽影壁壘',        isAI: true, rp: 1645, wins: 39, losses: 14, draws: 3, aiLevel: 'hard',   skill: 0.89, lastDelta: 0 },
+    { id: 'r_seok',  name: '絕境圍城',        isAI: true, rp: 1530, wins: 34, losses: 16, draws: 2, aiLevel: 'hard',   skill: 0.80, lastDelta: 0 },
     { id: 'r_hyun',  name: 'HyunGyu_Pro',    isAI: true, rp: 1445, wins: 29, losses: 16, draws: 1, aiLevel: 'hard',   skill: 0.74, lastDelta: 0 },
     { id: 'r_nova',  name: '赤藍策士',        isAI: true, rp: 1350, wins: 25, losses: 17, draws: 2, aiLevel: 'medium', skill: 0.64, lastDelta: 0 },
     { id: 'r_tin',   name: 'Tinno_99',       isAI: true, rp: 1270, wins: 21, losses: 16, draws: 1, aiLevel: 'medium', skill: 0.56, lastDelta: 0 },
